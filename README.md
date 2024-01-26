@@ -1,2 +1,2 @@
 # ToDo
-Task Manajer on Golang
+Task Manager on Golang
