@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/lallison21/to-do/internal/lib/logger/sl"
+	"github.com/lallison21/to-do/internal/storage/postgres"
 	"log/slog"
 	"os"
 
@@ -22,7 +24,13 @@ func main() {
 	log.Debug("debug messages are enabled")
 
 	// в вермии до 1.21 импортировали как сторонюю библиотеку. В 1.21 использовать log/slog
-	// TODO: init logger: slog
+	storage, err := postgres.New(cfg.StoragePath)
+	if err != nil {
+		log.Error("failed to init storage", sl.Err(err))
+		os.Exit(1)
+	}
+
+	_ = storage
 
 	// TODO: init storage: postgresql
 
