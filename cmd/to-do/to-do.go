@@ -23,16 +23,13 @@ func main() {
 	log.Info("starting to-go", slog.String("env", cfg.Env))
 	log.Debug("debug messages are enabled")
 
-	// в вермии до 1.21 импортировали как сторонюю библиотеку. В 1.21 использовать log/slog
-	storage, err := postgres.New(cfg.StoragePath)
+	storage, err := postgres.New(cfg.StorageConfig)
 	if err != nil {
 		log.Error("failed to init storage", sl.Err(err))
 		os.Exit(1)
 	}
 
 	_ = storage
-
-	// TODO: init storage: postgresql
 
 	// TODO: init router: chi, "chi render"
 

@@ -1,40 +1,29 @@
 package postgres
 
 import (
-	"database/sql"
-	"fmt"
+	_ "github.com/lib/pq"
 
-	_ "github.com/jackc/pgx"
+	"fmt"
+	"github.com/jmoiron/sqlx"
+	"github.com/lallison21/to-do/internal/config"
 )
 
 type Storage struct {
-	db *sql.DB
+	db *sqlx.DB
 }
 
-func New(storagePath string) (*Storage, error) {
+func New(storageConfig config.StorageConfig) (*Storage, error) {
 	const fn = "storage.postgres.New"
 
-	db, err := sql.Open("postgres", storagePath)
+	db, err := sqlx.Open("postgres", fmt.Sprintf("host=%s post=%s user=%s dbname=%s password=%s sslmode=%s",
+		storageConfig.Host, storageConfig.Port, storageConfig.Username, storageConfig.DBName, storageConfig.Password, storageConfig.SSLMode))
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", fn, err)
 	}
 
-	stmt, err := db.Prepare(`
-	CREATE TABLE IF NOT EXIST tasks(
-	    id INTEGER PRIMARY KEY,
-	    task_name TEXT NOT NULL,
-	    description TEXT NOT NULL
-	);
-	CREATE INDEX IF NOT EXISTS idx_task_name ON tasks(task_name);
-	`)
-	if err != nil {
+	if err = db.Ping(); err != nil {
 		return nil, fmt.Errorf("%s: %w", fn, err)
 	}
 
-	_, err = stmt.Exec()
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", fn, err)
-	}
-
-	return &Storage{db: db}, nil
+	return nil, nil
 }
