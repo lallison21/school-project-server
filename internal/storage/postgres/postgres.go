@@ -15,7 +15,7 @@ type Storage struct {
 func New(storageConfig config.StorageConfig) (*Storage, error) {
 	const fn = "storage.postgres.New"
 
-	db, err := sqlx.Open("postgres", fmt.Sprintf("host=%s post=%s user=%s dbname=%s password=%s sslmode=%s",
+	db, err := sqlx.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
 		storageConfig.Host, storageConfig.Port, storageConfig.Username, storageConfig.DBName, storageConfig.Password, storageConfig.SSLMode))
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", fn, err)
