@@ -1,9 +1,19 @@
-DROP TABLE lists_items;
+DROP TABLE journal;
 
-DROP TABLE users_lists;
+DROP TABLE student_in_class;
 
-DROP TABLE todo_lists;
+DROP TABLE lessons_schedule;
+
+DROP TABLE lesson_info;
+
+DROP TABLE classroom_info;
+
+DROP TABLE class_info;
+
+DROP TABLE student_info;
+
+DROP TABLE teacher_info;
 
 DROP TABLE users;
 
-DROP TABLE todo_items;
+DROP TABLE role_list;

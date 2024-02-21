@@ -31,6 +31,20 @@ func main() {
 
 	_ = storage
 
+	id, err := storage.CreateRole("Администратор", 1)
+	if err != nil {
+		log.Error("failed to init storage", sl.Err(err))
+		os.Exit(1)
+	}
+
+	log.Info("created role", slog.Int64("id", id))
+
+	id, err = storage.CreateRole("Администратор", 1)
+	if err != nil {
+		log.Error("failed to init storage", sl.Err(err))
+		os.Exit(1)
+	}
+
 	// TODO: init router: chi, "chi render"
 
 	// TODO: run server:

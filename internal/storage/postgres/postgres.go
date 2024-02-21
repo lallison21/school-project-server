@@ -25,5 +25,26 @@ func New(storageConfig config.StorageConfig) (*Storage, error) {
 		return nil, fmt.Errorf("%s: %w", fn, err)
 	}
 
-	return nil, nil
+	return &Storage{db: db}, nil
+}
+
+func (s *Storage) CreateRole(roleName string, accessLevel int) (int64, error) {
+	const fn = "storage.postgres.CreateRole"
+
+	stmt, err := s.db.Prepare("INSERT INTO role_list(role_name, access_level) VALUES($1, $2)")
+	if err != nil {
+		return 0, fmt.Errorf("%s: %w", fn, err)
+	}
+
+	res, err := stmt.Exec(roleName, accessLevel)
+	if err != nil {
+		return 0, fmt.Errorf("%s: %w", fn, err)
+	}
+
+	id, err := res.LastInsertId()
+	if err != nil {
+		return 0, fmt.Errorf("%s: failed to get last index id: %w", fn, err)
+	}
+
+	return id, nil
 }
