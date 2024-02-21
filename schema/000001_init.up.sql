@@ -81,3 +81,5 @@ CREATE TABLE IF NOT EXISTS journal
     assessment int,
     visiting bool default false not null
 );
+
+INSERT INTO role_list(role_name, access_level) VALUES('Администратор', 1)
