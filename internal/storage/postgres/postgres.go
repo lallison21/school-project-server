@@ -31,20 +31,35 @@ func New(storageConfig config.StorageConfig) (*Storage, error) {
 func (s *Storage) CreateRole(roleName string, accessLevel int) (int64, error) {
 	const fn = "storage.postgres.CreateRole"
 
-	stmt, err := s.db.Prepare("INSERT INTO role_list(role_name, access_level) VALUES($1, $2)")
+	stmt, err := s.db.Prepare("INSERT INTO role_list(role_name, access_level) VALUES($1, $2) RETURNING id")
 	if err != nil {
-		return 0, fmt.Errorf("%s: %w", fn, err)
+		return 0, fmt.Errorf("%s: prepare statement: %w", fn, err)
 	}
 
-	res, err := stmt.Exec(roleName, accessLevel)
-	if err != nil {
-		return 0, fmt.Errorf("%s: %w", fn, err)
-	}
-
-	id, err := res.LastInsertId()
+	var id int64
+	err = stmt.QueryRow(roleName, accessLevel).Scan(&id)
 	if err != nil {
 		return 0, fmt.Errorf("%s: failed to get last index id: %w", fn, err)
 	}
 
 	return id, nil
 }
+
+func (s *Storage) GetRoleById(id int) (string, error) {
+	const fn = "storage.postgres.GetRoleById"
+
+	stmt, err := s.db.Prepare("SELECT role_name FROM role_list WHERE id = $1")
+	if err != nil {
+		return "", fmt.Errorf("%s: prepare statement: %w", fn, err)
+	}
+
+	var roleName string
+	if err = stmt.QueryRow(id).Scan(&roleName); err != nil {
+		return "", fmt.Errorf("%s: execute statement: %w", fn, err)
+	}
+
+	return roleName, nil
+}
+
+// TODO: implement method:
+// func (s *Storage) DeleteRole(id int) error

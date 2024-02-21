@@ -1,12 +1,16 @@
 package main
 
 import (
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/lallison21/to-do/internal/lib/logger/handlers/slogpretty"
 	"github.com/lallison21/to-do/internal/lib/logger/sl"
 	"github.com/lallison21/to-do/internal/storage/postgres"
 	"log/slog"
 	"os"
 
 	"github.com/lallison21/to-do/internal/config"
+	"github.com/lallison21/to-do/internal/http-server/middleware"
 )
 
 const (
@@ -22,6 +26,7 @@ func main() {
 
 	log.Info("starting to-go", slog.String("env", cfg.Env))
 	log.Debug("debug messages are enabled")
+	log.Error("error messages are enabled")
 
 	storage, err := postgres.New(cfg.StorageConfig)
 	if err != nil {
@@ -31,19 +36,12 @@ func main() {
 
 	_ = storage
 
-	id, err := storage.CreateRole("Администратор", 1)
-	if err != nil {
-		log.Error("failed to init storage", sl.Err(err))
-		os.Exit(1)
-	}
+	router := chi.NewRouter()
 
-	log.Info("created role", slog.Int64("id", id))
-
-	id, err = storage.CreateRole("Администратор", 1)
-	if err != nil {
-		log.Error("failed to init storage", sl.Err(err))
-		os.Exit(1)
-	}
+	router.Use(middleware.RequestID)
+	router.Use(mwLogger.New(log))
+	router.Use(middleware.Recoverer)
+	router.Use(middleware.URLFormat)
 
 	// TODO: init router: chi, "chi render"
 
@@ -56,7 +54,7 @@ func setupLogger(env string) *slog.Logger {
 	switch env {
 	case envLocal:
 		log = slog.New(
-			slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}),
+			slogpretty.NewHandler(&slog.HandlerOptions{Level: slog.LevelDebug}),
 		)
 	case envDev:
 		log = slog.New(
