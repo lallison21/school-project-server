@@ -1,2 +1,2 @@
-# ToDo
-Task Manager on Golang
+# School-Project-Server
+School Project Server on Golang
