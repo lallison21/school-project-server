@@ -1,4 +1,4 @@
-module github.com/lallison21/to-do
+module github.com/lallison21/school-project-server
 
 go 1.21.6
 

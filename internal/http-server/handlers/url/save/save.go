@@ -5,8 +5,8 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
-	resp "github.com/lallison21/to-do/internal/lib/api/response"
-	"github.com/lallison21/to-do/internal/lib/logger/sl"
+	resp "github.com/lallison21/school-project-server/internal/lib/api/response"
+	"github.com/lallison21/school-project-server/internal/lib/logger/sl"
 	"log/slog"
 	"net/http"
 )

@@ -3,16 +3,16 @@ package main
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/lallison21/to-do/internal/http-server/handlers/url/save"
-	"github.com/lallison21/to-do/internal/lib/logger/handlers/slogpretty"
-	"github.com/lallison21/to-do/internal/lib/logger/sl"
-	"github.com/lallison21/to-do/internal/storage/postgres"
+	"github.com/lallison21/school-project-server/internal/http-server/handlers/url/save"
+	mwLogger "github.com/lallison21/school-project-server/internal/http-server/middleware"
+	"github.com/lallison21/school-project-server/internal/lib/logger/handlers/slogpretty"
+	"github.com/lallison21/school-project-server/internal/lib/logger/sl"
+	"github.com/lallison21/school-project-server/internal/storage/postgres"
 	"log/slog"
 	"net/http"
 	"os"
 
-	"github.com/lallison21/to-do/internal/config"
-	"github.com/lallison21/to-do/internal/http-server/middleware"
+	"github.com/lallison21/school-project-server/internal/config"
 )
 
 const (

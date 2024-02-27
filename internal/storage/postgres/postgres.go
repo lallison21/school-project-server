@@ -5,7 +5,7 @@ import (
 
 	"fmt"
 	"github.com/jmoiron/sqlx"
-	"github.com/lallison21/to-do/internal/config"
+	"github.com/lallison21/school-project-server/internal/config"
 )
 
 type Storage struct {
