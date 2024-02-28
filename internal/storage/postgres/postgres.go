@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"github.com/lallison21/school-project-server/internal/http-server/handlers/url/role"
 	_ "github.com/lib/pq"
 
 	"fmt"
@@ -28,37 +29,67 @@ func New(storageConfig config.StorageConfig) (*Storage, error) {
 	return &Storage{db: db}, nil
 }
 
-func (s *Storage) CreateRole(roleName string, accessLevel int) (int64, error) {
-	const fn = "storage.postgres.CreateRole"
+func (s *Storage) GetRoles() ([]role.Role, error) {
+	const fn = "storage.postgres.GetRoleById"
+	var res []role.Role
 
-	stmt, err := s.db.Prepare("INSERT INTO role_list(role_name, access_level) VALUES($1, $2) RETURNING id")
+	stmt, err := s.db.Prepare("SELECT * FROM role_list")
 	if err != nil {
-		return 0, fmt.Errorf("%s: prepare statement: %w", fn, err)
+		return res, fmt.Errorf("%s: prepare statement: %w", fn, err)
 	}
 
-	var id int64
-	err = stmt.QueryRow(roleName, accessLevel).Scan(&id)
+	rows, err := stmt.Query()
 	if err != nil {
-		return 0, fmt.Errorf("%s: failed to get last index id: %w", fn, err)
+		return res, fmt.Errorf("%s: execute statement: %w", fn, err)
 	}
 
-	return id, nil
+	for rows.Next() {
+		var r role.Role
+		if err := rows.Scan(&r.Id, &r.RoleName, &r.AccessLeve); err != nil {
+			return res, fmt.Errorf("%s: scan error: %w", fn, err)
+		}
+		res = append(res, r)
+	}
+	if err := rows.Err(); err != nil {
+		return res, fmt.Errorf("%s: rows error: %w", fn, err)
+	}
+	if err := rows.Close(); err != nil {
+		return res, fmt.Errorf("%s: close rows: %w", fn, err)
+	}
+
+	return res, nil
 }
 
-func (s *Storage) GetRoleById(id int) (string, error) {
+func (s *Storage) GetRoleById(id int) (role.Role, error) {
 	const fn = "storage.postgres.GetRoleById"
+	var res role.Role
 
-	stmt, err := s.db.Prepare("SELECT role_name FROM role_list WHERE id = $1")
+	stmt, err := s.db.Prepare("SELECT * FROM role_list WHERE id = $1")
 	if err != nil {
-		return "", fmt.Errorf("%s: prepare statement: %w", fn, err)
+		return res, fmt.Errorf("%s: prepare statement: %w", fn, err)
 	}
 
-	var roleName string
-	if err = stmt.QueryRow(id).Scan(&roleName); err != nil {
-		return "", fmt.Errorf("%s: execute statement: %w", fn, err)
+	if err = stmt.QueryRow(id).Scan(&res.Id, &res.RoleName, &res.AccessLeve); err != nil {
+		return res, fmt.Errorf("%s: execute statement: %w", fn, err)
 	}
 
-	return roleName, nil
+	return res, nil
+}
+
+func (s *Storage) CreateRole(roleName string, accessLevel int) (role.Role, error) {
+	const fn = "storage.postgres.CreateRole"
+	var res role.Role
+
+	stmt, err := s.db.Prepare("INSERT INTO role_list(role_name, access_level) VALUES($1, $2) RETURNING *")
+	if err != nil {
+		return res, fmt.Errorf("%s: prepare statement: %w", fn, err)
+	}
+
+	if err = stmt.QueryRow(roleName, accessLevel).Scan(&res.Id, &res.RoleName, &res.AccessLeve); err != nil {
+		return res, fmt.Errorf("%s: failed to get new created role: %w", fn, err)
+	}
+
+	return res, nil
 }
 
 // TODO: implement method:

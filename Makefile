@@ -1,6 +1,6 @@
 .PHONY: build up down
 build:
-	go build -v ./cmd/to-do
+	go build -v ./cmd/school-project-server
 
 migrate-up:
 	migrate -path ./schema -database 'postgres://postgres:qwerty@localhost:5432/postgres?sslmode=disable' up

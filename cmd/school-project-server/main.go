@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/lallison21/school-project-server/internal/http-server/handlers/url/save"
+	"github.com/lallison21/school-project-server/internal/http-server/handlers/url/role"
 	mwLogger "github.com/lallison21/school-project-server/internal/http-server/middleware"
 	"github.com/lallison21/school-project-server/internal/lib/logger/handlers/slogpretty"
 	"github.com/lallison21/school-project-server/internal/lib/logger/sl"
@@ -41,7 +41,9 @@ func main() {
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
 
-	router.Post("/create_role", save.New(log, storage))
+	router.Get("/get_roles", role.GetRoles(log, storage))
+	router.Get("/get_role/{id}", role.GetRoleById(log, storage))
+	router.Post("/create_role", role.CreateRole(log, storage))
 
 	log.Info("starting server", slog.String("address", cfg.Address))
 
