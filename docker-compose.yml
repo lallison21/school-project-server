@@ -1,0 +1,53 @@
+services:
+  school-project:
+    image: school-server:local
+    container_name: school-server
+    ports:
+      - "8080:8080"
+    depends_on:
+      school-db:
+        condition: service_healthy
+    networks:
+      - school
+
+  school-db:
+    image: postgres:latest
+    container_name: school-database
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=qwerty
+    volumes:
+      - ./.database/data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - school
+
+  migrate:
+    image: migrate/migrate
+    profiles: ["tools"]
+    volumes:
+      - ./schema:/migrations
+    entrypoint:
+      [
+        "migrate",
+        "-path",
+        "/migrations",
+        "-database",
+        "postgres://postgres:qwerty@school-db:5432/postgres?sslmode=disable"
+      ]
+    command: ["up", "down"]
+    depends_on:
+      school-db:
+        condition: service_healthy
+    networks:
+      - school
+
+
+networks:
+  school:
+    name: school

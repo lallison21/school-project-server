@@ -1,6 +1,6 @@
 env: "local" # local, dev, prod
 storage_config:
-  host: "localhost"
+  host: "school-db"
   port: "5432"
   username: "postgres"
   password: "qwerty"
