@@ -3,7 +3,7 @@ services:
     image: school-server:local
     container_name: school-server
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     depends_on:
       school-db:
         condition: service_healthy
@@ -13,8 +13,6 @@ services:
   school-db:
     image: postgres:latest
     container_name: school-database
-    ports:
-      - "5432:5432"
     environment:
       - POSTGRES_PASSWORD=qwerty
     volumes:
