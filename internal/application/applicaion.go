@@ -1,6 +1,7 @@
 package application
 
 import (
+	"context"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jmoiron/sqlx"
@@ -52,6 +53,10 @@ func New() *Application {
 }
 
 func (app *Application) Run() {
+	ctx := context.Background()
+
+	_ = ctx
+
 	if err := app.server.ListenAndServe(); err != nil {
 		app.log.Error("failed to start server")
 	}
