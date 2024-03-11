@@ -2,6 +2,11 @@ services:
   school-project:
     image: school-server:local
     container_name: school-server
+    environment:
+      DB_CONNECTION_STRING: "postgres://postgres:qwerty@school-db:5432/postgres?sslmode=disable"
+      SERVER_TIMEOUT: 5
+      IDLE_TIMEOUT: 60
+      ENV_MODE: "local"
     ports:
       - "127.0.0.1:8080:8080"
     depends_on:

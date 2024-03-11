@@ -1,4 +1,4 @@
-package slogpretty
+package pretty_slog
 
 import (
 	"bytes"

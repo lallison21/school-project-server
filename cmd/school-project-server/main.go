@@ -5,9 +5,9 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/lallison21/school-project-server/internal/http-server/handlers/url/role"
 	mwLogger "github.com/lallison21/school-project-server/internal/http-server/middleware"
-	"github.com/lallison21/school-project-server/internal/lib/logger/handlers/slogpretty"
 	"github.com/lallison21/school-project-server/internal/lib/logger/sl"
 	"github.com/lallison21/school-project-server/internal/storage/postgres"
+	pretty_slog "github.com/lallison21/school-project-server/pkg/prettySlog"
 	"log/slog"
 	"net/http"
 	"os"
@@ -22,11 +22,14 @@ const (
 )
 
 func main() {
+	//application.New().Run()
+
 	cfg := config.MustLoad()
+	config.New()
 
 	log := setupLogger(cfg.Env)
 
-	log.Info("starting to-go", slog.String("env", cfg.Env))
+	log.Info("starting school-project-server", slog.String("env", cfg.Env))
 
 	storage, err := postgres.New(cfg.StorageConfig)
 	if err != nil {
@@ -68,7 +71,7 @@ func setupLogger(env string) *slog.Logger {
 	switch env {
 	case envLocal:
 		log = slog.New(
-			slogpretty.NewHandler(&slog.HandlerOptions{Level: slog.LevelDebug}),
+			pretty_slog.NewHandler(&slog.HandlerOptions{Level: slog.LevelDebug}),
 		)
 	case envDev:
 		log = slog.New(
